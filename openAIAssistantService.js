@@ -32,23 +32,19 @@ class OpenAIAssistantService {
     }
   }
 
-  async streamMessages(threadId, runId, res) {
+  async streamMessages(threadId, assistantId, res) {
     try {
       console.log(
-        `📢 Streaming messages for Thread: ${threadId}, Run: ${runId}`
+        `📢 Streaming messages for Thread: ${threadId} using assistantId: ${assistantId}`
       );
 
       res.setHeader("Content-Type", "text/event-stream");
       res.setHeader("Cache-Control", "no-cache");
       res.setHeader("Connection", "keep-alive");
 
-      // Retrieve assistant_id from environment (or you could pass it in)
-      const assistantId = process.env.ASSISTANT_ID;
-
-      // Build the stream options; note we remove run_id as it's not supported.
+      // Use the assistantId from the request instead of from process.env
       const streamOptions = { assistant_id: assistantId };
 
-      // Call the streaming endpoint (runId is not passed as an option)
       const stream = this.openai.beta.threads.runs.stream(
         threadId,
         streamOptions

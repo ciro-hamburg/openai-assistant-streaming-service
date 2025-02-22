@@ -18,11 +18,11 @@ app.post("/create-thread", async (req, res) => {
   }
 });
 
-// Use the streaming endpoint with only threadId; the assistant_id is obtained from .env.
+// Example: Passing assistantId as a query parameter
 app.get("/stream-message/:threadId", (req, res) => {
   const { threadId } = req.params;
-  // We pass null for runId since it's not used
-  OpenAIAssistantService.streamMessages(threadId, null, res);
+  const assistantId = req.query.assistantId; // provided by the FE
+  OpenAIAssistantService.streamMessages(threadId, assistantId, res);
 });
 
 const PORT = process.env.PORT || 3000;
