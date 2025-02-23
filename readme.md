@@ -1,7 +1,3 @@
-Below is an example README-style documentation that explains how to start the server, create a thread, and stream the message. You can include this in your project as a `README.md` file.
-
----
-
 # OpenAI Assistant Streaming Service
 
 This project demonstrates how to create an OpenAI Assistant thread, run it using a streaming API, and then stream the assistant’s response to the client using Server-Sent Events (SSE).
