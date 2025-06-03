@@ -248,7 +248,7 @@
                     throw new Error(`HTTP error! status: ${createResponse.status}`);
                 }
 
-                const { threadId, runId } = await createResponse.json();
+                const { threadId } = await createResponse.json();
 
                 showStatus(`Thread created: ${threadId}`, 'success');
 

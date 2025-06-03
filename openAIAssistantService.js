@@ -18,14 +18,7 @@ class OpenAIAssistantService {
       });
 
       console.log(`✅ Thread Created: ${thread.id}`);
-
-      // Use OpenAI's streaming run helper
-      const run = await this.openai.beta.threads.runs.create(thread.id, {
-        assistant_id: assistantId,
-      });
-
-      console.log(`✅ Run Started: ${run.id} (Status: ${run.status})`);
-      return { threadId: thread.id, runId: run.id };
+      return { threadId: thread.id };
     } catch (error) {
       console.error("❌ Error creating thread:", error);
       throw error;
@@ -35,20 +28,17 @@ class OpenAIAssistantService {
   async streamMessages(threadId, assistantId, res) {
     try {
       console.log(
-        `📢 Streaming messages for Thread: ${threadId} using assistantId: ${assistantId}`
+        `📢 Starting streaming run for Thread: ${threadId} using assistantId: ${assistantId}`
       );
 
       res.setHeader("Content-Type", "text/event-stream");
       res.setHeader("Cache-Control", "no-cache");
       res.setHeader("Connection", "keep-alive");
 
-      // Use the assistantId from the request instead of from process.env
-      const streamOptions = { assistant_id: assistantId };
-
-      const stream = this.openai.beta.threads.runs.stream(
-        threadId,
-        streamOptions
-      );
+      // Create and stream the run in one step
+      const stream = this.openai.beta.threads.runs.stream(threadId, {
+        assistant_id: assistantId,
+      });
 
       stream
         .on("textCreated", () => {
