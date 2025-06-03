@@ -53,9 +53,10 @@ Summarize the strategy in a structured format, ready for implementation. No anno
 ### Core Components:
 
 1. **OpenAI Assistant Service** (`openAIAssistantService.js`)
-   - Manages thread creation and streaming
-   - Handles OpenAI API integration
-   - Processes Server-Sent Events
+   - Manages thread creation and streaming in one unified flow
+   - Handles OpenAI API integration with simplified response structure
+   - Processes Server-Sent Events with real-time streaming
+   - Uses OpenAI's native streaming capabilities for optimal performance
 
 2. **Express Server** (`server.js`)
    - Serves the frontend application
@@ -64,8 +65,9 @@ Summarize the strategy in a structured format, ready for implementation. No anno
 
 3. **Web Interface** (`public/index.html`)
    - Clean, responsive UI for assistant interaction
-   - Real-time response streaming
-   - Status indicators and error handling
+   - Real-time response streaming with visual feedback
+   - Status indicators and comprehensive error handling
+   - Interactive features including typing indicators and keyboard shortcuts
 
 ## 🚀 Quick Start
 
@@ -143,7 +145,7 @@ Use the web interface to test with prompts like:
 ## 📡 API Endpoints
 
 ### POST `/create-thread`
-Creates a new conversation thread with the assistant.
+Creates a new conversation thread with the assistant and immediately prepares it for streaming.
 
 **Request Body:**
 ```json
@@ -156,18 +158,23 @@ Creates a new conversation thread with the assistant.
 **Response:**
 ```json
 {
-  "threadId": "thread_abc123",
-  "runId": "run_def456"
+  "threadId": "thread_abc123"
 }
 ```
 
 ### GET `/stream-message/:threadId`
-Streams the assistant's response using Server-Sent Events.
+Streams the assistant's response using Server-Sent Events. This endpoint creates a run and immediately starts streaming the response.
 
 **Query Parameters:**
 - `assistantId`: Your OpenAI assistant ID
 
 **Response:** SSE stream with real-time assistant output
+
+**Events:**
+- `textCreated`: Fired when the assistant starts responding
+- `message`: Contains streamed text chunks
+- `done`: Fired when streaming is complete
+- `error`: Fired if an error occurs
 
 ## 🛠️ Development
 
@@ -185,10 +192,16 @@ openai-streaming-service/
 
 ### Key Technologies
 - **Backend**: Node.js, Express.js
-- **AI Integration**: OpenAI Assistant API
-- **Frontend**: Vanilla HTML/CSS/JavaScript
-- **Streaming**: Server-Sent Events (SSE)
-- **Environment**: dotenv for configuration
+- **AI Integration**: OpenAI Assistant API with native streaming
+- **Frontend**: Vanilla HTML/CSS/JavaScript with SSE integration
+- **Streaming**: Server-Sent Events (SSE) with real-time response handling
+- **Environment**: dotenv for configuration management
+
+### Recent Updates (Latest Commit)
+- **Simplified API Response**: Removed `runId` from response structure - now returns only `threadId`
+- **Streamlined Service**: Refactored `OpenAIAssistantService` to create and stream in one unified operation
+- **Enhanced UX**: Improved frontend with better status indicators, typing indicators, and keyboard shortcuts
+- **Error Handling**: More robust error handling and connection management
 
 ## 🎨 Customization
 
@@ -203,11 +216,12 @@ This architecture can be adapted for various domain-specific assistants:
 
 ### Modifying the System Prompt
 
-Update the assistant instructions to match your specific use case:
-```javascript
-// In openAIAssistantService.js
-const systemPrompt = `Your custom instructions here...`;
-```
+Update the assistant instructions in the OpenAI platform directly. The service automatically uses the instructions configured for your assistant:
+
+1. Go to [OpenAI Platform Assistants](https://platform.openai.com/assistants)
+2. Select your assistant
+3. Update the "Instructions" field with your custom prompt
+4. Save changes - no code changes needed!
 
 ## 🔒 Security Considerations
 
