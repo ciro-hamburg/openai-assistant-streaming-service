@@ -1,125 +1,239 @@
-# OpenAI Assistant Streaming Service
+# OpenAI Assistant Streaming Service - Media Planner Example
 
-This project demonstrates how to create an OpenAI Assistant thread, run it using a streaming API, and then stream the assistant’s response to the client using Server-Sent Events (SSE).
+A Node.js service demonstrating how to create an intelligent **Media Planner Assistant** using OpenAI's Assistant API with real-time streaming responses. This example shows how to build an AI-powered LinkedIn advertising campaign planner that leverages vector stores for contextual targeting recommendations.
 
-> **Example Message:**  
-> "I want to run a LinkedIn Ads campaign targeting mid-level marketing professionals in the tech industry. The goal is to generate leads for a SaaS product focused on AI-powered marketing automation. The ideal audience should have experience in digital marketing, growth strategies, or demand generation. The companies should be mid-to-large-sized, preferably experiencing high growth. What targeting options should I use?"
+🔗 **Live Demo**: [https://github.com/ciro-hamburg/openai-assistant-streaming-service](https://github.com/ciro-hamburg/openai-assistant-streaming-service)
 
-## Prerequisites
+## 🎯 What This Demonstrates
 
-- **Node.js** (version 14 or later)
-- An **OpenAI API key** with access to the Assistants API.
-- An **assistant ID** (this is not a secret key but an identifier for your OpenAI assistant).
+This project showcases how to:
+- **Stream OpenAI Assistant responses** in real-time using Server-Sent Events (SSE)
+- **Integrate vector stores** with OpenAI Assistants for context-aware responses
+- **Build domain-specific AI assistants** (Media Planning use case)
+- **Create interactive web interfaces** for AI assistant interactions
 
-## Setup
+## 🧠 The Media Planner Assistant
 
-1. **Clone the Repository** (or create your project folder) and navigate into it:
+This example creates an AI assistant that specializes in LinkedIn advertising campaign planning. The assistant analyzes campaign requests and provides detailed targeting recommendations using stored LinkedIn targeting attributes.
 
-   ```sh
-   git clone https://github.com/yourusername/openai-streaming-service.git
-   cd openai-streaming-service
+### System Instructions Used:
+```
+Plan LinkedIn advertising campaigns using JSON files containing LinkedIn targeting attributes (job_titles, skills, staffCountCategories, growthRateCategories, revenueCategories, industries, ageRange, yearsOfExperience, memberBehaviour, interest, jobFunctions, and seniorities). 
+
+Analyze the user's campaign request to identify key themes such as industry, job roles, professional interests, seniority levels, company size, and growth stage.
+
+Match relevant targeting options from the stored attributes, ensuring alignment with campaign goals. Assess available targeting categories, including job functions, industries, and audience interests, to refine the strategy. 
+
+Provide detailed recommendations, specifying targeting attributes such as job titles, skills, company growth rate, or revenue where applicable.
+
+Break down the plan by campaign objective (e.g., brand awareness, lead generation, engagement) and suggest audience targeting strategies accordingly. Ensure recommendations are actionable and specific, making them directly applicable to LinkedIn Ads campaign setup. 
+
+Summarize the strategy in a structured format, ready for implementation. No annotations.
+```
+
+## 🏗️ Technical Architecture
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Web Frontend  │────│  Express Server │────│ OpenAI Assistant│
+│   (HTML/JS)     │    │   (Node.js)     │    │   + Vector Store│
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         │ 1. Create Thread      │ 2. API Call           │
+         │ 2. Stream Response    │ 3. Stream Back        │
+         │                       │                       │
+         └───────── SSE ─────────┘                       │
+                                                         │
+                                 ┌─────────────────────┐ │
+                                 │ LinkedIn Targeting  │ │
+                                 │ Data (Vector Store) │─┘
+                                 └─────────────────────┘
+```
+
+### Core Components:
+
+1. **OpenAI Assistant Service** (`openAIAssistantService.js`)
+   - Manages thread creation and streaming
+   - Handles OpenAI API integration
+   - Processes Server-Sent Events
+
+2. **Express Server** (`server.js`)
+   - Serves the frontend application
+   - Provides REST endpoints for thread management
+   - Streams assistant responses via SSE
+
+3. **Web Interface** (`public/index.html`)
+   - Clean, responsive UI for assistant interaction
+   - Real-time response streaming
+   - Status indicators and error handling
+
+## 🚀 Quick Start
+
+### Prerequisites
+- **Node.js** (v14 or later)
+- **OpenAI API Key** with Assistant API access
+- **Assistant ID** (created in OpenAI platform)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/ciro-hamburg/openai-assistant-streaming-service.git
+   cd openai-assistant-streaming-service
    ```
 
-2. **Install Dependencies:**
-
-   ```sh
+2. **Install dependencies**
+   ```bash
    npm install
    ```
 
-3. **Environment Configuration:**
-
-   Create a `.env` file in the project root and add your OpenAI API key. (Since the assistant ID is passed dynamically from the frontend, it is not stored in the environment.)
-
-   ```ini
-   OPENAI_API_KEY=your-openai-api-key
+3. **Configure environment**
+   ```bash
+   # Edit .env file
+   OPENAI_API_KEY=your-openai-api-key-here
+   PORT=3000
    ```
 
-## Code Overview
-
-- **openAIAssistantService.js:**  
-  Contains methods to:
-  - Create a thread with a user message.
-  - Start a run (using the assistant ID passed in) and stream the assistant’s response.
-- **server.js:**  
-  An Express server that exposes endpoints to:
-  - Create a thread and run the assistant.
-  - Stream the assistant's response using SSE.
-
-## How to Start the Server
-
-1. Open a terminal in your project folder.
-2. Run the server using Node.js:
-   ```sh
-   node server.js
-   ```
-   You should see a message in the terminal:
-   ```
-   Initializing OpenAI Service...
-   Server running on port 3000
+4. **Start the server**
+   ```bash
+   npm start
    ```
 
-## How to Create a Thread
+5. **Open your browser**
+   ```
+   http://localhost:3000
+   ```
 
-Use the following `curl` command (or use Postman) to create a thread. Make sure to replace `your-assistant-id` with the actual assistant identifier.
+## 🔧 Setting Up Your Media Planner Assistant
 
-```sh
-curl -X POST http://localhost:3000/create-thread \
--H "Content-Type: application/json" \
--d '{
-  "assistantId": "your-assistant-id",
-  "message": "I want to run a LinkedIn Ads campaign targeting mid-level marketing professionals in the tech industry. The goal is to generate leads for a SaaS product focused on AI-powered marketing automation. The ideal audience should have experience in digital marketing, growth strategies, or demand generation. The companies should be mid-to-large-sized, preferably experiencing high growth. What targeting options should I use?"
-}'
-```
+### Step 1: Create an OpenAI Assistant
 
-### Expected Response
+1. Go to [OpenAI Platform Assistants](https://platform.openai.com/assistants)
+2. Click "Create Assistant"
+3. **Name**: "LinkedIn Media Planner"
+4. **Instructions**: Use the system prompt provided above
+5. **Enable Tools**: Check "File Search"
+6. **Model**: Choose GPT-4 or GPT-4 Turbo
 
-You will receive a JSON response containing the thread ID (and run ID):
+### Step 2: Create and Upload Vector Store
 
+1. **Create a Vector Store** in the OpenAI platform
+2. **Prepare your targeting data** as JSON files:
+   ```json
+   {
+     "job_titles": ["Marketing Manager", "Digital Marketing Specialist", "Growth Manager"],
+     "skills": ["Digital Marketing", "Lead Generation", "Marketing Automation"],
+     "industries": ["Software", "Technology", "SaaS"],
+     "staffCountCategories": ["51-200", "201-500", "501-1000"],
+     "growthRateCategories": ["High Growth", "Medium Growth"],
+     "revenueCategories": ["$1M-$10M", "$10M-$50M"],
+     "jobFunctions": ["Marketing", "Sales", "Business Development"],
+     "seniorities": ["Mid-level", "Senior", "Director"]
+   }
+   ```
+
+3. **Upload targeting files** to your vector store
+4. **Link the vector store** to your assistant
+
+### Step 3: Test Your Assistant
+
+Use the web interface to test with prompts like:
+> "I want to run a LinkedIn Ads campaign targeting mid-level marketing professionals in the tech industry for a SaaS product focused on AI-powered marketing automation."
+
+## 📡 API Endpoints
+
+### POST `/create-thread`
+Creates a new conversation thread with the assistant.
+
+**Request Body:**
 ```json
 {
-  "threadId": "thread_xyz",
-  "runId": "run_abc"
+  "assistantId": "asst_your_assistant_id",
+  "message": "Your campaign planning request"
 }
 ```
 
-## How to Stream the Message
-
-The streaming endpoint uses Server-Sent Events (SSE) to deliver the assistant’s response in real time.
-
-1. Open another terminal (or use a browser that supports SSE).
-2. Use the following `curl` command, ensuring you pass the `assistantId` as a query parameter:
-   ```sh
-   curl -N "http://localhost:3000/stream-message/thread_xyz?assistantId=your-assistant-id"
-   ```
-   Replace `thread_xyz` with the thread ID you received earlier and `your-assistant-id` with your assistant's ID.
-
-### What to Expect
-
-As the assistant processes the request, you will see output similar to the following:
-
-```
-event: textCreated
-data: Assistant started responding
-
-data: [Assistant’s streamed response content here...]
-
-event: done
-data: END
+**Response:**
+```json
+{
+  "threadId": "thread_abc123",
+  "runId": "run_def456"
+}
 ```
 
-The response will be streamed in real time, allowing you to see the assistant’s output as it is generated.
+### GET `/stream-message/:threadId`
+Streams the assistant's response using Server-Sent Events.
+
+**Query Parameters:**
+- `assistantId`: Your OpenAI assistant ID
+
+**Response:** SSE stream with real-time assistant output
+
+## 🛠️ Development
+
+### Project Structure
+```
+openai-streaming-service/
+├── server.js                 # Express server and routing
+├── openAIAssistantService.js # OpenAI API integration
+├── package.json              # Dependencies and scripts
+├── .env                      # Environment variables
+├── .gitignore               # Git ignore rules
+└── public/
+    └── index.html           # Frontend interface
+```
+
+### Key Technologies
+- **Backend**: Node.js, Express.js
+- **AI Integration**: OpenAI Assistant API
+- **Frontend**: Vanilla HTML/CSS/JavaScript
+- **Streaming**: Server-Sent Events (SSE)
+- **Environment**: dotenv for configuration
+
+## 🎨 Customization
+
+### Adapting for Other Use Cases
+
+This architecture can be adapted for various domain-specific assistants:
+
+1. **Legal Document Assistant**: Upload legal templates and statutes
+2. **Code Review Assistant**: Include coding standards and best practices
+3. **Customer Support Assistant**: Upload product documentation and FAQs
+4. **Content Strategy Assistant**: Include brand guidelines and content templates
+
+### Modifying the System Prompt
+
+Update the assistant instructions to match your specific use case:
+```javascript
+// In openAIAssistantService.js
+const systemPrompt = `Your custom instructions here...`;
+```
+
+## 🔒 Security Considerations
+
+- ✅ API keys stored in environment variables
+- ✅ `.env` file excluded from git
+- ✅ Input validation on API endpoints
+- ✅ Error handling for failed requests
+
+## 📚 Learn More
+
+- [OpenAI Assistant API Documentation](https://platform.openai.com/docs/assistants/overview)
+- [Vector Stores Guide](https://platform.openai.com/docs/assistants/tools/file-search)
+- [Server-Sent Events (SSE)](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events)
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
+
+## 📄 License
+
+This project is licensed under the ISC License - see the LICENSE file for details.
 
 ---
 
-## Summary
-
-1. **Start the Server:**  
-   Run `node server.js` in your project folder.
-
-2. **Create a Thread:**  
-   Use the provided POST endpoint with your desired message to create a thread and start a run.
-
-3. **Stream the Message:**  
-   Access the `/stream-message/:threadId` endpoint with the `assistantId` provided as a query parameter to receive the streaming response.
-
-This documentation should help you get started and test the functionality of your OpenAI Assistant streaming service. If you have any further questions or need additional assistance, feel free to ask!
+**💡 Pro Tip**: This example demonstrates the power of combining OpenAI Assistants with vector stores for domain-specific AI applications. The same pattern can be applied to create specialized assistants for various industries and use cases.
